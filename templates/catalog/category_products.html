@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Товары категории "{{ category.name }}" - ProductFlow{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2><i class="fas fa-tags"></i> Категория: {{ category.name }}</h2>
+        <p class="text-muted">Товары в этой категории</p>
+    </div>
+    <div>
+        <a href="{% url 'category_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Все категории
+        </a>
+        <a href="{% url 'product_create' %}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Добавить товар
+        </a>
+    </div>
+</div>
+
+{% if products %}
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="card-img-top product-image" alt="{{ product.name }}">
+            {% else %}
+            <div class="card-img-top product-image bg-light d-flex align-items-center justify-content-center">
+                <i class="fas fa-image fa-3x text-muted"></i>
+            </div>
+            {% endif %}
+            
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text flex-grow-1">{{ product.description|truncatewords:15 }}</p>
+                
+                <div class="mt-auto">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="h5 text-primary">{{ product.price }} руб.</span>
+                    </div>
+                    
+                    <div class="btn-group w-100">
+                        <a href="{% url 'product_detail' product.pk %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{% url 'product_update' product.pk %}" class="btn btn-sm btn-outline-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'product_delete' product.pk %}" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-muted">
+                <small>Добавлен: {{ product.created_at|date:"d.m.Y" }}</small>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="fas fa-info-circle fa-2x mb-3"></i>
+    <h4>В этой категории нет товаров</h4>
+    <p>Добавьте первый товар в категорию "{{ category.name }}"</p>
+    <a href="{% url 'product_create' %}" class="btn btn-success">
+        <i class="fas fa-plus"></i> Добавить товар
+    </a>
+</div>
+{% endif %}
+{% endblock %}

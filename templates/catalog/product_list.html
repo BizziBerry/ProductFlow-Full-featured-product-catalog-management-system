@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Товары - ProductFlow{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-boxes"></i> Каталог товаров</h2>
+    <a href="{% url 'product_create' %}" class="btn btn-success">
+        <i class="fas fa-plus"></i> Добавить товар
+    </a>
+</div>
+
+<!-- Фильтры -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-filter"></i> Фильтры и сортировка
+        </h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Категория</label>
+                {{ filter_form.category }}
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Цена от</label>
+                {{ filter_form.min_price }}
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Цена до</label>
+                {{ filter_form.max_price }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Сортировка</label>
+                {{ filter_form.sort_by }}
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100 me-2">
+                    <i class="fas fa-search"></i> Применить
+                </button>
+            </div>
+        </form>
+        <div class="mt-2">
+            <a href="{% url 'product_list' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-times"></i> Сбросить фильтры
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if products %}
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="card-img-top product-image" alt="{{ product.name }}">
+            {% else %}
+            <div class="card-img-top product-image bg-light d-flex align-items-center justify-content-center">
+                <i class="fas fa-image fa-3x text-muted"></i>
+            </div>
+            {% endif %}
+            
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text flex-grow-1">
+                    {{ product.description|truncatewords:15 }}
+                </p>
+                
+                <div class="mt-auto">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="h5 text-primary">{{ product.price }} руб.</span>
+                        <span class="badge bg-secondary">{{ product.category.name }}</span>
+                    </div>
+                    
+                    <div class="btn-group w-100">
+                        <a href="{% url 'product_detail' product.pk %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-eye"></i> Просмотр
+                        </a>
+                        <a href="{% url 'product_update' product.pk %}" class="btn btn-sm btn-outline-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'product_delete' product.pk %}" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-muted">
+                <small>Добавлен: {{ product.created_at|date:"d.m.Y" }}</small>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Пагинация -->
+{% if is_paginated %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+        </li>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="fas fa-info-circle fa-2x mb-3"></i>
+    <h4>Товары не найдены</h4>
+    <p>Попробуйте изменить параметры фильтрации или добавьте первый товар.</p>
+    <a href="{% url 'product_create' %}" class="btn btn-success">
+        <i class="fas fa-plus"></i> Добавить первый товар
+    </a>
+</div>
+{% endif %}
+{% endblock %}

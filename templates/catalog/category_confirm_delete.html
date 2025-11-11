@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Удаление категории - ProductFlow{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-exclamation-triangle"></i> Подтверждение удаления
+                </h4>
+            </div>
+            <div class="card-body text-center">
+                <h5>Вы уверены, что хотите удалить категорию?</h5>
+                <p class="lead">{{ category.name }}</p>
+                
+                {% if category.products.count > 0 %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-warning"></i>
+                    Внимание! В этой категории находится {{ category.products.count }} товар(ов). 
+                    Они также будут удалены!
+                </div>
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="btn-group w-100">
+                        <a href="{% url 'category_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Отмена
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Да, удалить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
